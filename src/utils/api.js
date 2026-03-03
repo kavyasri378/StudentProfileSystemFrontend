@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 // Determine API base URL based on environment
 const getApiBaseUrl = () => {
