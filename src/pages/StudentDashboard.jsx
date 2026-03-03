@@ -1,23 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { 
   User, 
   BookOpen, 
   DollarSign, 
   Calendar,
-  Phone,
-  Mail,
   MapPin,
-  Award,
-  CreditCard
+  Award
 } from 'lucide-react';
 import api from '../utils/api';
-import { formatDate, formatCurrency, calculatePendingFees, getFeeStatus } from '../utils/helpers';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   
   // State management
   const [profile, setProfile] = useState(null);

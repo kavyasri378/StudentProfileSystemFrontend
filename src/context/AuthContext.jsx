@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import api, { setAuthToken } from '../utils/api';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import api from '../utils/api';
 import toast from 'react-hot-toast';
 
 // Create our authentication context
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Load user data from server
-  const loadUser = async () => {
+  const loadUser = useCallback(async () => {
     const token = localStorage.getItem('token');
     
     if (token) {
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
         type: AUTH_FAIL,
       });
     }
-  };
+  }, []);
 
   // Register new user
   const register = async (formData) => {
@@ -185,7 +185,7 @@ export const AuthProvider = ({ children }) => {
   // Load user data when component mounts
   useEffect(() => {
     loadUser();
-  }, []);
+  }, [loadUser]);
 
   // Provide context value to children
   const value = {
