@@ -1,18 +1,36 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install",
+  "framework": "create-react-app",
+  "cleanUrls": {
+    "production": "/",
+    "development": "/"
+  },
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "src": "/api/(.*)",
+      "dest": "/api/$1",
+      "methods": ["GET", "POST", "PUT", "DELETE"]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html",
+      "has": [
+        {
+          "type": "host",
+          "value": "spmbackend.onrender.com"
+        }
+      ],
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-action"
+        }
+      ]
     }
   ]
 }

@@ -45,13 +45,28 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor for error handling
+// Add response interceptor for enhanced error handling
 api.interceptors.response.use(
   (response) => {
+    // Log successful responses in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`API Response: ${response.config.method?.toUpperCase()} ${response.config.url} - Status: ${response.status}`);
+    }
     return response;
   },
   (error) => {
-    // Handle common errors
+    // Handle specific error cases
+    if (error.response?.status === 404) {
+      console.error('Resource not found:', error.config.url);
+      
+      // Only show toast in production for 404s
+      if (process.env.NODE_ENV === 'production') {
+        toast.error('The requested resource was not found');
+      }
+      
+      return Promise.reject(error);
+    }
+    
     if (error.response?.status === 401) {
       // Unauthorized - clear token and redirect to login
       localStorage.removeItem('token');
@@ -59,7 +74,26 @@ api.interceptors.response.use(
       window.location.href = '/login';
     }
     
-    console.error('API Error:', error.response?.data || error.message);
+    if (error.response?.status === 500) {
+      console.error('Server error:', error.response?.data);
+      toast.error('Server error. Please try again later.');
+    }
+    
+    // Handle network errors
+    if (error.code === 'NETWORK_ERROR') {
+      console.error('Network error:', error.message);
+      toast.error('Network connection failed. Please check your internet.');
+    }
+    
+    // Default error handling
+    const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
+    console.error('API Error:', errorMessage);
+    
+    // Only show toast for non-404 errors in production
+    if (process.env.NODE_ENV === 'production' && error.response?.status !== 404) {
+      toast.error(errorMessage);
+    }
+    
     return Promise.reject(error);
   }
 );

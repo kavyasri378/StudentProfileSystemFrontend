@@ -12,6 +12,7 @@ import ProfileForm from './pages/ProfileForm';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import EditStudent from './pages/EditStudent';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -69,7 +70,7 @@ function App() {
             </Route>
             
             {/* 404 Route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
       </Router>
