@@ -18,6 +18,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 10000, // 10 second timeout
+  withCredentials: false, // Important for CORS
 });
 
 // Function to set authentication token
@@ -81,9 +82,24 @@ api.interceptors.response.use(
     }
     
     // Handle network errors
-    if (error.code === 'NETWORK_ERROR') {
-      console.error('Network error:', error.message);
-      toast.error('Network connection failed. Please check your internet.');
+    if (error.code === 'NETWORK_ERROR' || error.code === 'ECONNREFUSED') {
+      console.error('Network connection failed:', error.message);
+      toast.error('Cannot connect to server. Please check your internet connection.');
+      return Promise.reject(error);
+    }
+    
+    // Handle CORS errors
+    if (error.message?.includes('CORS')) {
+      console.error('CORS error:', error.message);
+      toast.error('Server connection blocked. Please contact administrator.');
+      return Promise.reject(error);
+    }
+    
+    // Handle timeout errors
+    if (error.code === 'ECONNABORTED') {
+      console.error('Request timeout:', error.message);
+      toast.error('Request timed out. Please try again.');
+      return Promise.reject(error);
     }
     
     // Default error handling
