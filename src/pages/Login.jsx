@@ -87,8 +87,8 @@ const Login = () => {
       await login(formData);
       
       // Show success message (toast is shown in auth context)
-      const from = location.state?.from?.pathname || '/dashboard';
-      navigate(from, { replace: true });
+      // Navigation will be handled by RoleBasedRedirect component in App.jsx
+      navigate('/', { replace: true });
     } catch (error) {
       // Error is already handled in auth context with toast
       console.error('Login failed:', error);
