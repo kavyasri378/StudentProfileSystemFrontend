@@ -118,7 +118,22 @@ export const AuthProvider = ({ children }) => {
       return res.data;
     } catch (error) {
       console.error('Register error:', error);
-      const message = error.response?.data?.message || 'Registration failed';
+      
+      // Handle specific error cases
+      let message = 'Registration failed';
+      
+      if (error.response?.status === 400) {
+        if (error.response?.data?.message?.includes('already exists')) {
+          message = 'Email already registered. Please use a different email or login.';
+        } else if (error.response?.data?.message?.includes('validation')) {
+          message = 'Please check your input and try again.';
+        } else {
+          message = error.response?.data?.message || 'Invalid registration data';
+        }
+      } else if (error.response?.status === 500) {
+        message = 'Server error. Please try again later.';
+      }
+      
       toast.error(message);
       dispatch({
         type: AUTH_FAIL,
@@ -143,7 +158,24 @@ export const AuthProvider = ({ children }) => {
       return res.data;
     } catch (error) {
       console.error('Login error:', error);
-      const message = error.response?.data?.message || 'Login failed';
+      
+      // Handle specific error cases
+      let message = 'Login failed';
+      
+      if (error.response?.status === 400) {
+        if (error.response?.data?.message?.includes('Invalid credentials')) {
+          message = 'Invalid email or password. Please try again.';
+        } else if (error.response?.data?.message?.includes('not found')) {
+          message = 'User not found. Please check your email or register.';
+        } else {
+          message = error.response?.data?.message || 'Invalid login credentials';
+        }
+      } else if (error.response?.status === 500) {
+        message = 'Server error during login. Please try again later.';
+      } else if (error.code === 'ECONNABORTED') {
+        message = 'Login request timed out. Please try again.';
+      }
+      
       toast.error(message);
       dispatch({
         type: AUTH_FAIL,
